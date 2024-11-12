@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+     /* Checkout Form */
+     .checkout-form {
+        display: none;
+        padding: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background:gold;
+        color: white;
+        text-align: center;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+</style>
+</head>
+<body>
+<!-- Checkout Form -->
+<div class="checkout-form" id="checkoutForm">
+    <h2>Checkout</h2>
+    <form id="paymentForm" onsubmit="handleCheckout(event)">
+        <div class="form-group">
+            <label>Full Name:</label>
+            <input type="text" required name="fullName">
+        </div>
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" required name="email">
+        </div>
+        <div class="form-group">
+            <label>Phone Number:</label>
+            <input type="tel" required name="phone">
+        </div>
+        <div class="form-group">
+            <label>Location:</label>
+            <input type="text" required name="location">
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="radio" name="delivery" required>
+                I require delivery
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary">Confirm Order</button>
+    </form>
+</div>
+<script>
+    // Checkout functions
+    function showCheckoutForm() {
+        document.getElementById('checkoutForm').style.display = 'block';
+        document.getElementById('cartModal').style.display = 'none';
+    }
+
+    function handleCheckout(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        
+        // Send to PHP backend for M-Pesa integration
+        fetch('process_payment.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Order placed successfully! Please complete the M-Pesa payment.');
+                cart = [];
+                updateCart();
+                document.getElementById('checkoutForm').style.display = 'none';
+            } else {
+                alert('Error processing order. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error processing order. Please try again.');
+        });
+    }
+
+    // Initialize the page
+    initializeProducts();
+</script>
+</body>
+</html>

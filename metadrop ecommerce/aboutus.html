@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | MetaDrop</title>
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+      
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f4f4f4;
+        color: #333;
+      }
+      
+      header {
+        width: 100%;
+        background-color: #333;
+        padding: 1rem;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      header h1 {
+        font-size: 1.5rem;
+      }
+      
+      nav a {
+        color: #fff;
+        margin: 0 1rem;
+        text-decoration: none;
+      }
+      
+      main {
+        width: 80%;
+        margin: 2rem 0;
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      .about-us h2, .mission h3, .team h3 {
+        color: #333;
+        margin-bottom: 0.5rem;
+      }
+      
+      .team-members {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      
+      .team-member {
+        text-align: center;
+        padding: 1rem;
+        background-color: #f4f4f4;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      .team-member img {
+        border-radius: 50%;
+      }
+      
+      footer {
+        width: 100%;
+        background-color:#2c3e50;
+        color: #fff;
+        text-align: center;
+        padding: 1rem;
+        margin-top: 12rem;
+      }
+      
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MetaDrop</h1>
+    <nav>
+      <a href="homepage.html">Home</a>
+      <a href="list product.html">List Product</a>
+      <a href="hotdeals.html">Hot Deals</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="about-us">
+      <h2>About MetaDrop</h2>
+      <p>MetaDrop is your one-stop online store for unique, high-quality products that cater to the latest trends in lifestyle and tech.</p>
+    </section>
+
+    <section class="mission">
+      <h3>Our Mission</h3>
+      <p>Our mission is to bring innovation and convenience to your doorstep by offering cutting-edge products and exceptional customer service.</p>
+    </section>
+
+    <section class="team">
+      <h3>Meet Our Team</h3>
+      <div class="team-members">
+        <div class="team-member">
+          <img src="https://via.placeholder.com/150" alt="Team Member">
+          <h4>Levy Kiprotich</h4>
+          <p>CEO & Founder</p>
+          <button onclick="showBio('Alex')">View Bio</button>
+        </div>
+        <div class="team-member">
+          <img src="https://via.placeholder.com/150" alt="Team Member">
+          <h4>Ruudvan Mwinamo</h4>
+          <p>Head of Marketing</p>
+          <button onclick="showBio('Sara')">View Bio</button>
+        </div>
+      </div>
+      <p id="bio-text"></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 MetaDrop - All rights reserved</p>
+  </footer>
+  <script>
+    function showBio(name) {
+        const bioText = document.getElementById("bio-text");
+      
+        if (name === "Levy") {
+          bioText.textContent = "Levy Kiprotich Kirui is the founder and CEO of MetaDrop with over 10 years of experience in e-commerce and technology.";
+        } else if (name === "Ruudvan") {
+          bioText.textContent = "Ruudvan Mwinamo is the Head of Marketing at MetaDrop, specializing in digital strategy and customer engagement.";
+        } else {
+          bioText.textContent = "";
+        }
+      }
+      
+  </script>
+</body>
+</html>

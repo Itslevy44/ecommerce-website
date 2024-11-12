@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Delivery - Metadrop Store</title>
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --secondary-color: #3f3d56;
+            --success-color: #2ecc71;
+            --warning-color: #f1c40f;
+            --danger-color: #e74c3c;
+            --gray-color: #95a5a6;
+            --light-gray: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--light-gray);
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .tracking-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #5651d8;
+        }
+
+        .tracking-result {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .order-details {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .status-timeline {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--gray-color);
+        }
+
+        .timeline-step {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 2rem;
+        }
+
+        .step-indicator {
+            position: absolute;
+            left: 0;
+            width: 32px;
+            height: 32px;
+            background-color: white;
+            border: 2px solid var(--gray-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-indicator.completed {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+        }
+
+        .step-indicator.current {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .step-content {
+            background-color: var(--light-gray);
+            padding: 1rem;
+            border-radius: 5px;
+        }
+
+        .step-content h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .estimated-delivery {
+            background-color: var(--warning-color);
+            color: #333;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Track Your Delivery</h1>
+        <p>Enter your order number to track your package</p>
+    </header>
+
+    <div class="container">
+        <div class="tracking-form">
+            <form id="trackingForm">
+                <div class="form-group">
+                    <label for="orderNumber">Order Number</label>
+                    <input type="text" id="orderNumber" placeholder="e.g., MD123456789" required>
+                    <div id="errorMessage" class="error-message">Please enter a valid order number</div>
+                </div>
+                <button type="submit">Track Order</button>
+            </form>
+        </div>
+
+        <div id="trackingResult" class="tracking-result">
+            <div class="order-details">
+                <h3>Order Details</h3>
+                <p id="orderInfo"></p>
+            </div>
+
+            <div class="status-timeline">
+                <div class="timeline-line"></div>
+                <div id="timelineSteps"></div>
+            </div>
+
+            <div id="estimatedDelivery" class="estimated-delivery"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simulated order database
+        const orderDatabase = {
+            'MD123456789': {
+                orderDate: '2024-10-25',
+                items: ['Gaming Headset', 'Mechanical Keyboard'],
+                status: 'in_transit',
+                timeline: [
+                    {
+                        status: 'order_placed',
+                        date: '2024-10-25 14:30',
+                        location: 'Online',
+                        details: 'Order confirmed and payment received'
+                    },
+                    {
+                        status: 'processing',
+                        date: '2024-10-26 09:15',
+                        location: 'Metadrop Warehouse',
+                        details: 'Order is being processed and packed'
+                    },
+                    {
+                        status: 'shipped',
+                        date: '2024-10-26 16:45',
+                        location: 'Distribution Center',
+                        details: 'Package has been shipped'
+                    },
+                    {
+                        status: 'in_transit',
+                        date: '2024-10-27 10:30',
+                        location: 'Regional Hub',
+                        details: 'Package is in transit to delivery location'
+                    }
+                ],
+                estimatedDelivery: '2024-10-30'
+            },
+            'MD987654321': {
+                orderDate: '2024-10-26',
+                items: ['Gaming Mouse', 'Mousepad'],
+                status: 'delivered',
+                timeline: [
+                    {
+                        status: 'order_placed',
+                        date: '2024-10-26 11:20',
+                        location: 'Online',
+                        details: 'Order confirmed and payment received'
+                    },
+                    {
+                        status: 'processing',
+                        date: '2024-10-26 14:45',
+                        location: 'Metadrop Warehouse',
+                        details: 'Order is being processed and packed'
+                    },
+                    {
+                        status: 'shipped',
+                        date: '2024-10-27 09:30',
+                        location: 'Distribution Center',
+                        details: 'Package has been shipped'
+                    },
+                    {
+                        status: 'delivered',
+                        date: '2024-10-28 13:15',
+                        location: 'Delivery Address',
+                        details: 'Package has been delivered'
+                    }
+                ],
+                estimatedDelivery: '2024-10-28'
+            }
+        };
+
+        // Status definitions
+        const statusInfo = {
+            order_placed: { icon: '✓', title: 'Order Placed' },
+            processing: { icon: '⚙️', title: 'Processing' },
+            shipped: { icon: '📦', title: 'Shipped' },
+            in_transit: { icon: '🚚', title: 'In Transit' },
+            delivered: { icon: '✓', title: 'Delivered' }
+        };
+
+        // Form submission handler
+        document.getElementById('trackingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const orderNumber = document.getElementById('orderNumber').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            const trackingResult = document.getElementById('trackingResult');
+
+            // Validate order number
+            if (!orderNumber.match(/^MD\d{9}$/)) {
+                errorMessage.style.display = 'block';
+                trackingResult.style.display = 'none';
+                return;
+            }
+
+            errorMessage.style.display = 'none';
+            const order = orderDatabase[orderNumber];
+
+            if (order) {
+                displayOrderDetails(order);
+                displayTimeline(order);
+                trackingResult.style.display = 'block';
+            } else {
+                errorMessage.textContent = 'Order not found';
+                errorMessage.style.display = 'block';
+                trackingResult.style.display = 'none';
+            }
+        });
+
+        function displayOrderDetails(order) {
+            const orderInfo = document.getElementById('orderInfo');
+            orderInfo.innerHTML = `
+                <p><strong>Order Date:</strong> ${formatDate(order.orderDate)}</p>
+                <p><strong>Items:</strong> ${order.items.join(', ')}</p>
+            `;
+        }
+
+        function displayTimeline(order) {
+            const timelineSteps = document.getElementById('timelineSteps');
+            const estimatedDelivery = document.getElementById('estimatedDelivery');
+            timelineSteps.innerHTML = '';
+
+            order.timeline.forEach((step, index) => {
+                const isCompleted = index < order.timeline.length - 1;
+                const isCurrent = index === order.timeline.length - 1;
+
+                const stepElement = document.createElement('div');
+                stepElement.className = 'timeline-step';
+                stepElement.innerHTML = `
+                    <div class="step-indicator ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
+                        ${statusInfo[step.status].icon}
+                    </div>
+                    <div class="step-content">
+                        <h4>${statusInfo[step.status].title}</h4>
+                        <p>${step.details}</p>
+                        <p><strong>Location:</strong> ${step.location}</p>
+                        <p><strong>Date:</strong> ${formatDateTime(step.date)}</p>
+                    </div>
+                `;
+
+                timelineSteps.appendChild(stepElement);
+            });
+
+            if (order.status !== 'delivered') {
+                estimatedDelivery.textContent = `Estimated Delivery: ${formatDate(order.estimatedDelivery)}`;
+                estimatedDelivery.style.display = 'block';
+            } else {
+                estimatedDelivery.style.display = 'none';
+            }
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function formatDateTime(dateTimeString) {
+            return new Date(dateTimeString).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    </script>
+</body>
+</html>

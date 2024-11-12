@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Registration & Product Listing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .hidden {
+            display: none;
+        }
+        .success-message {
+            color: green;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="businessForm">
+        <h2>Business Registration</h2>
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="businessName">Business Name:</label>
+                <input type="text" id="businessName" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="businessEmail">Business Email:</label>
+                <input type="email" id="businessEmail" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="businessPhone">Phone Number:</label>
+                <input type="tel" id="businessPhone" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="businessAddress">Business Address:</label>
+                <textarea id="businessAddress" autocomplete="off" required></textarea>
+            </div>
+            <button type="submit">Register Business</button>
+        </form>
+    </div>
+
+    <div id="productForm" class="hidden">
+        <h2>List Your Product</h2>
+        <form id="listingForm">
+            <div class="form-group">
+                <label for="productTitle">Product Title:</label>
+                <input type="text" id="productTitle" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="productDescription">Description:</label>
+                <textarea id="productDescription"  autocomplete="off" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="productQuantity">Quantity:</label>
+                <input type="number" id="productQuantity" min="1" autocomplete="off"  required>
+            </div>
+            <div class="form-group">
+                <label for="productPrice">Price ($):</label>
+                <input type="number" id="productPrice" min="0" step="0.01" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="productLocation">Location:</label>
+                <input type="text" id="productLocation" autocomplete="off" required>
+            </div>
+            <button type="submit">List Product</button>
+        </form>
+    </div>
+
+    <p id="successMessage" class="success-message hidden"></p>
+
+    <script>
+        // Store business and product data
+        let businesses = JSON.parse(localStorage.getItem('businesses')) || [];
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+
+        // Business registration form handler
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const business = {
+                id: Date.now(),
+                name: document.getElementById('businessName').value,
+                email: document.getElementById('businessEmail').value,
+                phone: document.getElementById('businessPhone').value,
+                address: document.getElementById('businessAddress').value
+            };
+
+            businesses.push(business);
+            localStorage.setItem('businesses', JSON.stringify(businesses));
+
+            // Hide business form and show product form
+            document.getElementById('businessForm').classList.add('hidden');
+            document.getElementById('productForm').classList.remove('hidden');
+            
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = 'Business registered successfully! You can now list your products.';
+            successMessage.classList.remove('hidden');
+        });
+
+        // Product listing form handler
+        document.getElementById('listingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const product = {
+                id: Date.now(),
+                businessId: businesses[businesses.length - 1].id,
+                title: document.getElementById('productTitle').value,
+                description: document.getElementById('productDescription').value,
+                quantity: document.getElementById('productQuantity').value,
+                price: document.getElementById('productPrice').value,
+                location: document.getElementById('productLocation').value
+            };
+
+            products.push(product);
+            localStorage.setItem('products', JSON.stringify(products));
+
+            // Clear form and show success message
+            document.getElementById('listingForm').reset();
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = 'Product listed successfully! It will now appear on the listed products.';
+            successMessage.classList.remove('hidden');
+
+            // Redirect to homepage after 2 seconds
+            setTimeout(() => {
+                window.location.href = 'list product.html';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
